@@ -5,6 +5,12 @@
 [![markdown](https://github.com/wnowicki/ragnarok/workflows/Markdown%20Lint/badge.svg)](https://github.com/wnowicki/ragnarok/actions?query=branch%3Amain)
 [![License: GPLv3](https://img.shields.io/badge/License-MIT-blue.svg)](https://license.md/licenses/mit-license/)
 
+## Run
+
+```shell
+streamlit run main.py
+```
+
 ## Setup
 
 ### Dependencies

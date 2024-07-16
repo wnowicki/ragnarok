@@ -1,0 +1,11 @@
+langchain
+langchain-community
+faiss-cpu
+openai
+tiktoken
+InstructorEmbedding
+sentence-transformers
+streamlit
+python-dotenv
+pandas
+trafilatura
