@@ -1,4 +1,9 @@
-# Python Template
+# RAG-nārok
+
+[![python](https://img.shields.io/badge/Python-3.x-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
+[![pylint](https://github.com/wnowicki/ragnarok/workflows/Pylint/badge.svg)](https://github.com/wnowicki/ragnarok/actions?query=branch%3Amain)
+[![markdown](https://github.com/wnowicki/ragnarok/workflows/Markdown%20Lint/badge.svg)](https://github.com/wnowicki/ragnarok/actions?query=branch%3Amain)
+[![License: GPLv3](https://img.shields.io/badge/License-MIT-blue.svg)](https://license.md/licenses/mit-license/)
 
 ## Setup
 
@@ -38,7 +43,7 @@ deactivate
 
 ## Security
 
-If you discover any security-related issues, please email [email](mailto:email) instead of using the issue tracker.
+If you discover any security-related issues, please use the issue tracker.
 
 ---
-Copyright (c) [year] [fullname]
+Copyright (c) 2024 Wojciech Nowicki
