@@ -1,0 +1,31 @@
+[project]
+name = "RAG-nārok"
+description = "RAG"
+dynamic = ["version"]
+requires-python = ">=3.11"
+readme = "README.md"
+license = "LICENSE.md"
+
+[project.urls]
+"Homepage" = "https://github.com/wnowicki/ragnarok"
+"Source" = "https://github.com/wnowicki/ragnarok"
+
+[tool.ruff]
+
+line-length = 100
+extend-exclude = ["*.ipynb"]
+
+[tool.ruff.lint]
+# 1. Enable flake8-bugbear (`B`) rules, in addition to the defaults.
+select = ["E4", "E7", "E9", "F", "B", "Q"]
+
+# 2. Avoid enforcing line-length violations (`E501`)
+ignore = ["E501"]
+
+# 3. Avoid trying to fix flake8-bugbear (`B`) violations.
+unfixable = ["B"]
+
+# 4. Ignore `E402` (import violations) in all `__init__.py` files, and in selected subdirectories.
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402", "F403"]
+"**/{tests,docs,tools}/*" = ["E402", "S101"]
