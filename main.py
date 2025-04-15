@@ -15,7 +15,10 @@ from langchain.prompts import (
     SystemMessagePromptTemplate,
 )
 
+
 import streamlit as st
+
+load_dotenv()
 
 
 def load_dataset(dataset_name: str = "dataset.csv") -> pd.DataFrame:
@@ -34,7 +37,7 @@ def load_dataset(dataset_name: str = "dataset.csv") -> pd.DataFrame:
     return df
 
 
-def create_chunks(dataset: pd.DataFrame, chunk_size: int, chunk_overlap: int) -> list:
+def create_chunks(dataset: pd.DataFrame, chunk_size: int = 1000, chunk_overlap: int = 0) -> list:
     """
     Create chunks from the dataset
 
@@ -48,10 +51,10 @@ def create_chunks(dataset: pd.DataFrame, chunk_size: int, chunk_overlap: int) ->
     """
     text_chunks = DataFrameLoader(dataset, page_content_column="body").load_and_split(
         text_splitter=RecursiveCharacterTextSplitter(
-            chunk_size=1000, chunk_overlap=0, length_function=len
+            chunk_size=chunk_size, chunk_overlap=chunk_overlap, length_function=len
         )
     )
-    # aggiungiamo i metadati ai chunk stessi per facilitare il lavoro di recupero
+
     for doc in text_chunks:
         title = doc.metadata["title"]
         description = doc.metadata["description"]
@@ -73,7 +76,7 @@ def create_or_get_vector_store(chunks: list) -> FAISS:
     Returns:
         FAISS: Vector store
     """
-    embeddings = OpenAIEmbeddings()
+    embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
     # embeddings = HuggingFaceInstructEmbeddings()
 
     if not os.path.exists("./db"):
