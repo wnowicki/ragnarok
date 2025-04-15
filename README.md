@@ -46,4 +46,4 @@ deactivate
 If you discover any security-related issues, please use the issue tracker.
 
 ---
-Copyright (c) 2024 Wojciech Nowicki
+Copyright (c) 2024-2025 Wojciech Nowicki
