@@ -29,7 +29,7 @@ def create_dataset(list_of_websites: list) -> pd.DataFrame:
                 metadata = extract_metadata(html)
                 title = metadata.title
                 description = metadata.description
-            except:
+            except Exception:
                 metadata = ""
                 title = ""
                 description = ""

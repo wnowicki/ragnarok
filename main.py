@@ -5,10 +5,9 @@ from dotenv import load_dotenv
 
 from langchain.document_loaders import DataFrameLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
+from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
-from langchain.llms import HuggingFaceHub
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.prompts import (
@@ -19,7 +18,6 @@ from langchain.prompts import (
 
 import streamlit as st
 
-from pprint import pprint
 
 
 def load_dataset(dataset_name: str = "dataset.csv") -> pd.DataFrame:
