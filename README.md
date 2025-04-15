@@ -11,6 +11,14 @@
 streamlit run main.py
 ```
 
+### Build Database
+
+If you don't have it yet, modify `list_of_websites` in `get_dataset.py` and run it:
+
+```shell
+python get_dataset.py
+```
+
 ## Setup
 
 ### Dependencies

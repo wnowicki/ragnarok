@@ -1,14 +1,12 @@
-import pandas as pd
-
 import os
-from dotenv import load_dotenv
 
+import pandas as pd
+from dotenv import load_dotenv
 from langchain.document_loaders import DataFrameLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
+from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
-from langchain.llms import HuggingFaceHub
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.prompts import (
@@ -17,12 +15,13 @@ from langchain.prompts import (
     SystemMessagePromptTemplate,
 )
 
+
 import streamlit as st
 
-from pprint import pprint
+load_dotenv()
 
 
-def load_dataset(dataset_name:str="dataset.csv") -> pd.DataFrame:
+def load_dataset(dataset_name: str = "dataset.csv") -> pd.DataFrame:
     """
     Load dataset from file_path
 
@@ -37,7 +36,8 @@ def load_dataset(dataset_name:str="dataset.csv") -> pd.DataFrame:
     df = pd.read_csv(file_path)
     return df
 
-def create_chunks(dataset:pd.DataFrame, chunk_size:int, chunk_overlap:int) -> list:
+
+def create_chunks(dataset: pd.DataFrame, chunk_size: int = 1000, chunk_overlap: int = 0) -> list:
     """
     Create chunks from the dataset
 
@@ -49,23 +49,22 @@ def create_chunks(dataset:pd.DataFrame, chunk_size:int, chunk_overlap:int) -> li
     Returns:
         list: List of chunks
     """
-    text_chunks = DataFrameLoader(
-        dataset, page_content_column="body"
-    ).load_and_split(
+    text_chunks = DataFrameLoader(dataset, page_content_column="body").load_and_split(
         text_splitter=RecursiveCharacterTextSplitter(
-            chunk_size=1000, chunk_overlap=0, length_function=len
+            chunk_size=chunk_size, chunk_overlap=chunk_overlap, length_function=len
         )
     )
-    # aggiungiamo i metadati ai chunk stessi per facilitare il lavoro di recupero
+
     for doc in text_chunks:
         title = doc.metadata["title"]
         description = doc.metadata["description"]
         content = doc.page_content
         url = doc.metadata["url"]
-        final_content = f"TITLE: {title}\DESCRIPTION: {description}\BODY: {content}\nURL: {url}"
+        final_content = f"TITLE: {title}\nDESCRIPTION: {description}\nBODY: {content}\nURL: {url}"
         doc.page_content = final_content
 
     return text_chunks
+
 
 def create_or_get_vector_store(chunks: list) -> FAISS:
     """
@@ -77,14 +76,12 @@ def create_or_get_vector_store(chunks: list) -> FAISS:
     Returns:
         FAISS: Vector store
     """
-    embeddings = OpenAIEmbeddings()
-    #embeddings = HuggingFaceInstructEmbeddings() # if you want to use open source embeddings
+    embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY"))
+    # embeddings = HuggingFaceInstructEmbeddings()
 
     if not os.path.exists("./db"):
         print("CREATING DB")
-        vectorstore = FAISS.from_documents(
-            chunks, embeddings
-        )
+        vectorstore = FAISS.from_documents(chunks, embeddings)
         vectorstore.save_local("./db")
     else:
         print("LOADING DB")
@@ -92,7 +89,10 @@ def create_or_get_vector_store(chunks: list) -> FAISS:
 
     return vectorstore
 
-def get_conversation_chain(vector_store:FAISS, system_message:str, human_message:str) -> ConversationalRetrievalChain:
+
+def get_conversation_chain(
+    vector_store: FAISS, system_message: str, human_message: str
+) -> ConversationalRetrievalChain:
     """
     Get the chatbot conversation chain
 
@@ -105,7 +105,7 @@ def get_conversation_chain(vector_store:FAISS, system_message:str, human_message
         ConversationalRetrievalChain: Chatbot conversation chain
     """
     llm = ChatOpenAI(model="gpt-4")
-    # llm = HuggingFaceHub(model="HuggingFaceH4/zephyr-7b-beta") # if you want to use open source LLMs
+    # llm = HuggingFaceHub(model="HuggingFaceH4/zephyr-7b-beta")
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
@@ -121,6 +121,7 @@ def get_conversation_chain(vector_store:FAISS, system_message:str, human_message
         },
     )
     return conversation_chain
+
 
 def handle_style_and_responses(user_question: str) -> None:
     """
@@ -138,14 +139,17 @@ def handle_style_and_responses(user_question: str) -> None:
     for i, message in enumerate(st.session_state.chat_history):
         if i % 2 == 0:
             st.markdown(
-                f"<p style='text-align: right;'><b>User</b></p> <p style='text-align: right;{human_style}'> <i>{message.content}</i> </p>",
+                "<p style='text-align: right;'><b>User</b></p> <p style='text-align: right;"
+                f"{human_style}'> <i>{message.content}</i> </p>",
                 unsafe_allow_html=True,
             )
         else:
             st.markdown(
-                f"<p style='text-align: left;'><b>Chatbot</b></p> <p style='text-align: left;{chatbot_style}'> <i>{message.content}</i> </p>",
+                "<p style='text-align: left;'><b>Chatbot</b></p> <p style='text-align: left;"
+                f"{chatbot_style}'> <i>{message.content}</i> </p>",
                 unsafe_allow_html=True,
             )
+
 
 def main():
     load_dotenv()
@@ -153,13 +157,16 @@ def main():
     chunks = create_chunks(df, 1000, 0)
     system_message_prompt = SystemMessagePromptTemplate.from_template(
         """
-        You are a chatbot tasked with responding to questions about the documentation of the LangChain library and project.
+        You are a chatbot tasked with responding to questions about the documentation of
+        the LangChain library and project.
 
-        You should never answer a question with a question, and you should always respond with the most relevant documentation page.
+        You should never answer a question with a question, and you should always respond
+        with the most relevant documentation page.
 
         Do not answer questions that are not about the LangChain library or project.
 
-        Given a question, you should respond with the most relevant documentation page by following the relevant context below:\n
+        Given a question, you should respond with the most relevant documentation page
+        by following the relevant context below:\n
         {context}
         """
     )
@@ -182,10 +189,13 @@ def main():
     st.markdown(
         """
         This chatbot was created to answer questions about the LangChain project documentation.
-        Ask a question and the chatbot will respond with the most relevant page of the documentation.
+        Ask a question and the chatbot will respond with the most relevant
+        page of the documentation.
         """
     )
-    st.image("https://images.unsplash.com/photo-1485827404703-89b55fcc595e") # Image rights to Alex Knight on Unsplash
+    st.image(
+        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e"
+    )  # Image rights to Alex Knight on Unsplash
 
     user_question = st.text_input("Ask your question")
     with st.spinner("Processing..."):
