@@ -6,6 +6,7 @@ from trafilatura import fetch_url, extract, extract_metadata
 
 # https://pub.towardsai.net/create-a-chatbot-in-python-with-langchain-and-rag-85bfba8c62d2
 
+
 def get_urls_from_sitemap(resource_url: str) -> list:
     """
     Recovers the sitemap through Trafilatura
@@ -32,12 +33,7 @@ def create_dataset(list_of_websites: list) -> pd.DataFrame:
                 metadata = ""
                 title = ""
                 description = ""
-            d = {
-                'url': url,
-                "body": body,
-                "title": title,
-                "description": description
-            }
+            d = {"url": url, "body": body, "title": title, "description": description}
             data.append(d)
             time.sleep(0.5)
     df = pd.DataFrame(data)

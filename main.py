@@ -22,7 +22,7 @@ import streamlit as st
 from pprint import pprint
 
 
-def load_dataset(dataset_name:str="dataset.csv") -> pd.DataFrame:
+def load_dataset(dataset_name: str = "dataset.csv") -> pd.DataFrame:
     """
     Load dataset from file_path
 
@@ -37,7 +37,8 @@ def load_dataset(dataset_name:str="dataset.csv") -> pd.DataFrame:
     df = pd.read_csv(file_path)
     return df
 
-def create_chunks(dataset:pd.DataFrame, chunk_size:int, chunk_overlap:int) -> list:
+
+def create_chunks(dataset: pd.DataFrame, chunk_size: int, chunk_overlap: int) -> list:
     """
     Create chunks from the dataset
 
@@ -49,9 +50,7 @@ def create_chunks(dataset:pd.DataFrame, chunk_size:int, chunk_overlap:int) -> li
     Returns:
         list: List of chunks
     """
-    text_chunks = DataFrameLoader(
-        dataset, page_content_column="body"
-    ).load_and_split(
+    text_chunks = DataFrameLoader(dataset, page_content_column="body").load_and_split(
         text_splitter=RecursiveCharacterTextSplitter(
             chunk_size=1000, chunk_overlap=0, length_function=len
         )
@@ -67,6 +66,7 @@ def create_chunks(dataset:pd.DataFrame, chunk_size:int, chunk_overlap:int) -> li
 
     return text_chunks
 
+
 def create_or_get_vector_store(chunks: list) -> FAISS:
     """
     Create or get vector store
@@ -78,13 +78,11 @@ def create_or_get_vector_store(chunks: list) -> FAISS:
         FAISS: Vector store
     """
     embeddings = OpenAIEmbeddings()
-    #embeddings = HuggingFaceInstructEmbeddings() # if you want to use open source embeddings
+    # embeddings = HuggingFaceInstructEmbeddings() # if you want to use open source embeddings
 
     if not os.path.exists("./db"):
         print("CREATING DB")
-        vectorstore = FAISS.from_documents(
-            chunks, embeddings
-        )
+        vectorstore = FAISS.from_documents(chunks, embeddings)
         vectorstore.save_local("./db")
     else:
         print("LOADING DB")
@@ -92,7 +90,10 @@ def create_or_get_vector_store(chunks: list) -> FAISS:
 
     return vectorstore
 
-def get_conversation_chain(vector_store:FAISS, system_message:str, human_message:str) -> ConversationalRetrievalChain:
+
+def get_conversation_chain(
+    vector_store: FAISS, system_message: str, human_message: str
+) -> ConversationalRetrievalChain:
     """
     Get the chatbot conversation chain
 
@@ -122,6 +123,7 @@ def get_conversation_chain(vector_store:FAISS, system_message:str, human_message
     )
     return conversation_chain
 
+
 def handle_style_and_responses(user_question: str) -> None:
     """
     Handle user input to create the chatbot conversation in Streamlit
@@ -146,6 +148,7 @@ def handle_style_and_responses(user_question: str) -> None:
                 f"<p style='text-align: left;'><b>Chatbot</b></p> <p style='text-align: left;{chatbot_style}'> <i>{message.content}</i> </p>",
                 unsafe_allow_html=True,
             )
+
 
 def main():
     load_dotenv()
@@ -185,7 +188,9 @@ def main():
         Ask a question and the chatbot will respond with the most relevant page of the documentation.
         """
     )
-    st.image("https://images.unsplash.com/photo-1485827404703-89b55fcc595e") # Image rights to Alex Knight on Unsplash
+    st.image(
+        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e"
+    )  # Image rights to Alex Knight on Unsplash
 
     user_question = st.text_input("Ask your question")
     with st.spinner("Processing..."):
