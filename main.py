@@ -1,8 +1,7 @@
-import pandas as pd
-
 import os
-from dotenv import load_dotenv
 
+import pandas as pd
+from dotenv import load_dotenv
 from langchain.document_loaders import DataFrameLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
@@ -17,7 +16,6 @@ from langchain.prompts import (
 )
 
 import streamlit as st
-
 
 
 def load_dataset(dataset_name: str = "dataset.csv") -> pd.DataFrame:
@@ -59,7 +57,7 @@ def create_chunks(dataset: pd.DataFrame, chunk_size: int, chunk_overlap: int) ->
         description = doc.metadata["description"]
         content = doc.page_content
         url = doc.metadata["url"]
-        final_content = f"TITLE: {title}\DESCRIPTION: {description}\BODY: {content}\nURL: {url}"
+        final_content = f"TITLE: {title}\nDESCRIPTION: {description}\nBODY: {content}\nURL: {url}"
         doc.page_content = final_content
 
     return text_chunks
@@ -76,7 +74,7 @@ def create_or_get_vector_store(chunks: list) -> FAISS:
         FAISS: Vector store
     """
     embeddings = OpenAIEmbeddings()
-    # embeddings = HuggingFaceInstructEmbeddings() # if you want to use open source embeddings
+    # embeddings = HuggingFaceInstructEmbeddings()
 
     if not os.path.exists("./db"):
         print("CREATING DB")
@@ -104,7 +102,7 @@ def get_conversation_chain(
         ConversationalRetrievalChain: Chatbot conversation chain
     """
     llm = ChatOpenAI(model="gpt-4")
-    # llm = HuggingFaceHub(model="HuggingFaceH4/zephyr-7b-beta") # if you want to use open source LLMs
+    # llm = HuggingFaceHub(model="HuggingFaceH4/zephyr-7b-beta")
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
@@ -138,12 +136,14 @@ def handle_style_and_responses(user_question: str) -> None:
     for i, message in enumerate(st.session_state.chat_history):
         if i % 2 == 0:
             st.markdown(
-                f"<p style='text-align: right;'><b>User</b></p> <p style='text-align: right;{human_style}'> <i>{message.content}</i> </p>",
+                "<p style='text-align: right;'><b>User</b></p> <p style='text-align: right;"
+                f"{human_style}'> <i>{message.content}</i> </p>",
                 unsafe_allow_html=True,
             )
         else:
             st.markdown(
-                f"<p style='text-align: left;'><b>Chatbot</b></p> <p style='text-align: left;{chatbot_style}'> <i>{message.content}</i> </p>",
+                "<p style='text-align: left;'><b>Chatbot</b></p> <p style='text-align: left;"
+                f"{chatbot_style}'> <i>{message.content}</i> </p>",
                 unsafe_allow_html=True,
             )
 
@@ -154,13 +154,16 @@ def main():
     chunks = create_chunks(df, 1000, 0)
     system_message_prompt = SystemMessagePromptTemplate.from_template(
         """
-        You are a chatbot tasked with responding to questions about the documentation of the LangChain library and project.
+        You are a chatbot tasked with responding to questions about the documentation of
+        the LangChain library and project.
 
-        You should never answer a question with a question, and you should always respond with the most relevant documentation page.
+        You should never answer a question with a question, and you should always respond
+        with the most relevant documentation page.
 
         Do not answer questions that are not about the LangChain library or project.
 
-        Given a question, you should respond with the most relevant documentation page by following the relevant context below:\n
+        Given a question, you should respond with the most relevant documentation page
+        by following the relevant context below:\n
         {context}
         """
     )
@@ -183,7 +186,8 @@ def main():
     st.markdown(
         """
         This chatbot was created to answer questions about the LangChain project documentation.
-        Ask a question and the chatbot will respond with the most relevant page of the documentation.
+        Ask a question and the chatbot will respond with the most relevant
+        page of the documentation.
         """
     )
     st.image(
