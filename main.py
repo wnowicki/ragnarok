@@ -88,7 +88,7 @@ def create_or_get_vector_store(chunks: list) -> FAISS:
         vectorstore.save_local("./db")
     else:
         print("LOADING DB")
-        vectorstore = FAISS.load_local("./db", embeddings)
+        vectorstore = FAISS.load_local("./db", embeddings, allow_dangerous_deserialization=True)
 
     return vectorstore
 
