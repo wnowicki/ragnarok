@@ -2,7 +2,7 @@
 name = "RAG-nārok"
 description = "RAG"
 dynamic = ["version"]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 readme = "README.md"
 license = "LICENSE.md"
 
