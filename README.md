@@ -5,6 +5,20 @@
 [![markdown](https://github.com/wnowicki/ragnarok/workflows/Markdown%20Lint/badge.svg)](https://github.com/wnowicki/ragnarok/actions?query=branch%3Amain)
 [![License: GPLv3](https://img.shields.io/badge/License-MIT-blue.svg)](https://license.md/licenses/mit-license/)
 
+## Run
+
+```shell
+streamlit run main.py
+```
+
+### Build Database
+
+If you don't have it yet, modify `list_of_websites` in `get_dataset.py` and run it:
+
+```shell
+python get_dataset.py
+```
+
 ## Setup
 
 ### Dependencies
